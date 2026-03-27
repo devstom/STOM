@@ -61,15 +61,7 @@ class BinanceReceiverMin(BinanceReceiverTick):
         buy_money = c * bids_
         sell_money = c * asks_
         if code not in self.dict_money:
-            # 분당매수금액, 분당매도금액, 당일매수금액, 최고매수금액, 최고매수가격, 당일매도금액, 최고매도금액, 최고매도가격
-            #     0          1          2          3          4          5          6          7
-            self.dict_money[code] = [buy_money, sell_money, buy_money, buy_money, c, sell_money, sell_money, c]
-            self.dict_index[code] = {c: 0}
-            self.dict_bmbyp[code] = np.zeros(1000, dtype=np.int64)
-            self.dict_smbyp[code] = np.zeros(1000, dtype=np.int64)
-            self.dict_bmbyp[code][0] = buy_money
-            self.dict_smbyp[code][0] = sell_money
-            self.dict_index[code]['count'] = 1
+            self.EnsureMoneyState(code, c, buy_money, sell_money)
         else:
             money_arr = self.dict_money[code]
             price_idx = self.dict_index[code]
@@ -205,6 +197,7 @@ class BinanceReceiverMin(BinanceReceiverTick):
                     hoga_buprice = hoga_buprice[:5]
                     hoga_bamount = hoga_bamount[:5]
 
+                self.EnsureMoneyState(code, c)
                 money_arr = self.dict_money[code]
 
                 tm = dm - code_dtdm[1]
